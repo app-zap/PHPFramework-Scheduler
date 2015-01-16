@@ -1,7 +1,7 @@
 {
   "name": "app-zap/phpframework-scheduler",
   "require": {
-    "app-zap/phpframework": "dev-develop",
+    "app-zap/phpframework": "dev-develop"
   },
   "autoload": {
     "psr-4": {
