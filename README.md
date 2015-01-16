@@ -23,6 +23,9 @@ To load the plugin enable it in your `settings.ini`:
 
 This plugin requires a certain SQL structure. You have to include it yourself, because PHPFramework [isn't capable to load plugin SQL](https://github.com/app-zap/PHPFramework/issues/51) yet:
 
-
-
-    SQL
+    CREATE TABLE `schedulertask` (
+      `classname` varchar(255) NOT NULL DEFAULT '',
+      `last_execution` int(11) DEFAULT NULL,
+      `id` int(11) DEFAULT NULL,
+      PRIMARY KEY (`classname`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

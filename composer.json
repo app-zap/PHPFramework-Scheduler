@@ -1,7 +1,8 @@
 {
   "name": "app-zap/phpframework-scheduler",
   "require": {
-    "app-zap/phpframework": "dev-develop"
+    "app-zap/phpframework": "dev-develop",
+    "mtdowling/cron-expression": "1.0.*"
   },
   "autoload": {
     "psr-4": {

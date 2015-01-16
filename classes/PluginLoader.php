@@ -9,9 +9,9 @@ class PluginLoader {
     SignalSlotDispatcher::registerSlot(
         Router::SIGNAL_ROUTE_DEFINITIONS,
         function(&$routes){
-          if (php_sapi_name() === 'cli') {
+          #if (php_sapi_name() === 'cli') {
             $routes['invokeScheduler'] = 'AppZap\\PHPFrameworkScheduler\\Controller\\SchedulerController';
-          }
+          #}
         }
     );
   }
