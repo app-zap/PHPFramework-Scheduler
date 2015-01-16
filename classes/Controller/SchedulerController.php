@@ -5,6 +5,7 @@ use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Mvc\AbstractController;
 use AppZap\PHPFrameworkScheduler\Domain\Model\SchedulerTask;
 use AppZap\PHPFrameworkScheduler\Domain\Repository\SchedulerTaskRepository;
+use Cron\CronExpression;
 
 class SchedulerController extends AbstractController {
 
@@ -31,7 +32,7 @@ class SchedulerController extends AbstractController {
           $schedulerTask->setClassname($classname);
           $this->schedulerTaskRespository->save($schedulerTask);
         }
-        $this->invokeTask($schedulerTask);
+        $invokeTask = $this->checkInvokeTask($schedulerTask, $timing);
       }
     }
     return 'Invoked scheduler successfully.';
@@ -43,9 +44,25 @@ class SchedulerController extends AbstractController {
 
   /**
    * @param SchedulerTask $schedulerTask
+   * @param mixed $timing Crontab string or timestamp
+   * @return bool
    */
-  protected function invokeTask(SchedulerTask $schedulerTask) {
-
+  protected function checkInvokeTask(SchedulerTask $schedulerTask, $timing) {
+    $now = time();
+    if (is_numeric($timing)) {
+      if ($timing > $schedulerTask->getLastExecution() && $timing < $now) {
+        return TRUE;
+      }
+      return FALSE;
+    }
+    if ($schedulerTask->getLastExecution() == 0) {
+      return TRUE;
+    }
+    $cron = CronExpression::factory($timing);
+    if ($cron->getPreviousRunDate() > $schedulerTask->getLastExecution()) {
+      return TRUE;
+    }
+    return FALSE;
   }
 
 }
