@@ -5,6 +5,7 @@
     "mtdowling/cron-expression": "1.0.*"
   },
   "autoload": {
+    "files": ["classes/PluginLoader.php"],
     "psr-4": {
       "AppZap\\PHPFrameworkScheduler\\": "classes/"
     }
