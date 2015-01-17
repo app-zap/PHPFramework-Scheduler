@@ -5,6 +5,7 @@ use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Mvc\AbstractController;
 use AppZap\PHPFrameworkScheduler\Domain\Model\SchedulerTask;
 use AppZap\PHPFrameworkScheduler\Domain\Repository\SchedulerTaskRepository;
+use AppZap\PHPFrameworkScheduler\TaskExecutorInterface;
 use Cron\CronExpression;
 
 class SchedulerController extends AbstractController {
@@ -30,16 +31,16 @@ class SchedulerController extends AbstractController {
         if (!$schedulerTask instanceof SchedulerTask) {
           $schedulerTask = new SchedulerTask();
           $schedulerTask->setClassname($classname);
-          $this->schedulerTaskRespository->save($schedulerTask);
         }
+        echo 'Check if ' . $schedulerTask->getClassname() . ' is due: ';
         $invokeTask = $this->checkInvokeTask($schedulerTask, $timing);
+        echo ($invokeTask ? 'Yes' : 'No') . "\n";
+        if ($invokeTask) {
+          $this->invokeTask($schedulerTask);
+        }
       }
     }
     return 'Invoked scheduler successfully.';
-  }
-
-  public function get() {
-    return $this->cli();
   }
 
   /**
@@ -59,10 +60,26 @@ class SchedulerController extends AbstractController {
       return TRUE;
     }
     $cron = CronExpression::factory($timing);
-    if ($cron->getPreviousRunDate() > $schedulerTask->getLastExecution()) {
+    if ($cron->getPreviousRunDate()->getTimestamp() > $schedulerTask->getLastExecution()) {
       return TRUE;
     }
     return FALSE;
+  }
+
+  /**
+   * @param SchedulerTask $schedulerTask
+   */
+  protected function invokeTask($schedulerTask) {
+    $classname = $schedulerTask->getClassname();
+    echo 'Invoking ' . $classname . "\n";
+    $taskExecutor = new $classname();
+    if (!$taskExecutor instanceof TaskExecutorInterface) {
+      echo 'Warning! Class ' . $classname . ' doesn\'t implement the TaskExecutorInterface.' . "\n";
+      return;
+    }
+    $taskExecutor->execute();
+    $schedulerTask->setLastExecution(new \DateTime('now'));
+    $this->schedulerTaskRespository->save($schedulerTask);
   }
 
 }
