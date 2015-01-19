@@ -25,7 +25,9 @@ This plugin requires a certain SQL structure. You have to include it yourself, b
       `last_execution` int(11) DEFAULT NULL,
       PRIMARY KEY (`id`),
       UNIQUE KEY `classname` (`classname`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+*Hint: If you're using the PHPFramework's database migrator, copy the above statement to a `.sql` file to have it applied automatically when needed.*
 
 Setup a cronjob like this:
 
