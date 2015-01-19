@@ -3,6 +3,8 @@ namespace AppZap\PHPFrameworkScheduler\Controller;
 
 use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Mvc\AbstractController;
+use AppZap\PHPFramework\Mvc\DispatchingInterruptedException;
+use AppZap\PHPFramework\Mvc\HttpStatus;
 use AppZap\PHPFrameworkScheduler\Domain\Model\SchedulerTask;
 use AppZap\PHPFrameworkScheduler\Domain\Repository\SchedulerTaskRepository;
 use AppZap\PHPFrameworkScheduler\TaskExecutorInterface;
@@ -43,6 +45,19 @@ class SchedulerController extends AbstractController {
     return 'Invoked scheduler successfully.';
   }
 
+  public function get() {
+    if (Configuration::get('phpframework-scheduler', 'enable_get_request', FALSE)) {
+      echo '<pre>';
+      return $this->cli();
+    } else {
+      HttpStatus::setStatus(
+        HttpStatus::STATUS_403_FORBIDDEN
+      );
+      HttpStatus::sendHeaders();
+      throw new DispatchingInterruptedException();
+    }
+  }
+
   /**
    * @param SchedulerTask $schedulerTask
    * @param mixed $timing Crontab string or timestamp
@@ -77,7 +92,7 @@ class SchedulerController extends AbstractController {
       echo 'Warning! Class ' . $classname . ' doesn\'t implement the TaskExecutorInterface.' . "\n";
       return;
     }
-    $taskExecutor->execute();
+    echo $taskExecutor->execute();
     $schedulerTask->setLastExecution(new \DateTime('now'));
     $this->schedulerTaskRespository->save($schedulerTask);
   }

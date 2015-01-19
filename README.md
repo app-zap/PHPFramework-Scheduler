@@ -43,3 +43,8 @@ You can set up tasks in your `settings.ini`:
 This calls the `DailyStatisticsMail` class daily at 6pm. The class has to implement the
 `\AppZap\PHPFrameworkScheduler\TaskExecutorInterface`, which means it has to implement the `execute()`
 method.
+
+For debugging purposes you can enable to start the scheduler via GET request from your browser:
+
+    [phpframework-scheduler]
+    enable_get_request = true
